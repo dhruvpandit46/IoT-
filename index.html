@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Remote ESP32 LED Control</title>
+  <style>
+    body{font-family:Arial;text-align:center;padding:40px;}
+    button{padding:15px 30px;font-size:18px;margin:10px;cursor:pointer;}
+  </style>
+</head>
+<body>
+  <h1>Remote ESP32 LED Control</h1>
+  <p>Press a button to change the LED state stored in Firebase.</p>
+  <button id="onBtn" style="background:green;color:white;">Turn ON</button>
+  <button id="offBtn" style="background:red;color:white;">Turn OFF</button>
+  <p id="status"></p>
+
+<script>
+const FIREBASE_URL = "https://your-project-id-default-rtdb.firebaseio.com"; // << replace this
+
+async function setLed(state) {
+  try {
+    const url = `${FIREBASE_URL}/ledStatus.json`; // .json required for REST API
+    // Use PUT to replace the value with "ON" or "OFF"
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state)
+    });
+    const data = await res.json();
+    document.getElementById('status').textContent = `Set ledStatus => ${data}`;
+  } catch (err) {
+    console.error(err);
+    document.getElementById('status').textContent = 'Error: ' + err;
+  }
+}
+
+document.getElementById('onBtn').onclick  = () => setLed("ON");
+document.getElementById('offBtn').onclick = () => setLed("OFF");
+</script>
+</body>
+</html>
